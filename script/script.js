@@ -1,7 +1,4 @@
 
-
-
-
 //---------------------------------------AJAX ----------------------------------------------
 
 
@@ -258,7 +255,7 @@ var setCell = function(cell){
 
 //--Checks wether player is X or o-----------//
 var changePlayer = function(){
-  if (player == "O") {
+  if (player === "O") {
     player = "X";
   } else {
     player = "O";
@@ -274,10 +271,12 @@ var cellNotEmpty = function cellNotEmpty(value) {
     return true;
   }
 }
+
+//-----------------shows the game ID----------------------------//
 var checkState = function(){
   if(!gameStarted && board.filter(cellNotEmpty).length > 0) {
     tttapi.createGame($('.token').val(), function cb(err, data) {
-      debugger;
+      //debugger;
       if(err) {
         console.error(err);
         return;
@@ -288,6 +287,8 @@ var checkState = function(){
 
     gameStarted = true;
   }
+
+  //-----------------------------------------------------------//
   $.each(winConditions, function(index,value){
    if (board[winConditions[index][0]] == board[winConditions[index][1]]
     && board[winConditions[index][0]] == board[winConditions[index][2]]
@@ -307,6 +308,8 @@ var init = function(){
   renderBoard();
   renderText();
 }
+//----------------------testing---------------
+
 
 $(document).ready(function(){
   init();
