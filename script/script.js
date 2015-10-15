@@ -1,7 +1,4 @@
 
-
-
-
 //---------------------------------------AJAX ----------------------------------------------
 
 
@@ -225,6 +222,8 @@ $(function() {
 //---------------declared Variables----------------//
 var board;
 var player;
+var gameId;
+var gameStarted;
 var winConditions = [[0,1,2], [3,4,5], [6,7,8],
                        [0,3,6], [1,4,7], [2,5,8],
                        [0,4,8], [6,4,2]]
@@ -256,7 +255,7 @@ var setCell = function(cell){
 
 //--Checks wether player is X or o-----------//
 var changePlayer = function(){
-  if (player == "O") {
+  if (player === "O") {
     player = "X";
   } else {
     player = "O";
@@ -265,7 +264,31 @@ var changePlayer = function(){
 
 
 //-------------------checks win conditions------------------------------//
+var cellNotEmpty = function cellNotEmpty(value) {
+  if(value === " ") {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+//-----------------shows the game ID----------------------------//
 var checkState = function(){
+  if(!gameStarted && board.filter(cellNotEmpty).length > 0) {
+    tttapi.createGame($('.token').val(), function cb(err, data) {
+      //debugger;
+      if(err) {
+        console.error(err);
+        return;
+      }
+
+      gameId = data.game.id;
+    });
+
+    gameStarted = true;
+  }
+
+  //-----------------------------------------------------------//
   $.each(winConditions, function(index,value){
    if (board[winConditions[index][0]] == board[winConditions[index][1]]
     && board[winConditions[index][0]] == board[winConditions[index][2]]
@@ -281,14 +304,16 @@ var init = function(){
   board = [" "," "," "," "," "," "," "," "," "];
   player ="X";
   gameOver = false;
+  gameStarted = false;
   renderBoard();
   renderText();
 }
+//----------------------testing---------------
+
 
 $(document).ready(function(){
   init();
 });
-
 
 
 
