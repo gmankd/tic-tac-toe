@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="script/script.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>TIC TAC TOE</h1>
+      <div class='tictactoe'>
+        <div class="board">
+          <div class="cell 0" onClick="setCell(0)"></div>
+          <div class="cell 1" onClick="setCell(1)">></div>
+          <div class="cell 2" onClick="setCell(2)"></div>
+          <div class="cell 3" onClick="setCell(3)"></div>
+          <div class="cell 4" onClick="setCell(4)"></div>
+          <div class="cell 5" onClick="setCell(5)"></div>
+          <div class="cell 6" onClick="setCell(6)"></div>
+          <div class="cell 7" onClick="setCell(7)"></div>
+          <div class="cell 8" onClick="setCell(8)"></div>
+        </div>
+        <div class="options">
+          <div class="playerText"></div>
+          <button class="restart" onClick="init()">Restart</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
