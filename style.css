@@ -1,0 +1,46 @@
+{
+  margin:0;
+  padding:0;
+  box-sizing :border-box;
+}
+
+.container{
+  width:600px;
+  margin:100px auto;
+  text-align: center;
+}
+.tictactoe{
+  margin:50px auto;
+}
+
+.board, .options{
+  width:350px;
+  margin:20px auto;
+  overflow: auto;
+}
+
+.cell{
+  float:left;
+  width:100px;
+  height:100px;
+  line-height: 100px;
+}
+
+[class*="0"],[class*="1"],[class*="2"],[class*="3"],[class*="4"],[class*="5"] {
+  border-bottom:2px solid black;
+}
+[class*="0"],[class*="3"],[class*="6"],[class*="1"],[class*="4"],[class*="7"] {
+  border-right:2px solid black;
+}
+
+.cell:hover{
+  background-color: rgba(0,0,0,0.02);
+}
+
+.playerText{
+  float:left;
+
+}
+.restart{
+  float:right;
+}
