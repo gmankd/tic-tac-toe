@@ -5,6 +5,7 @@
 var tttapi = {
   gameWatcher: null,
   ttt: 'http://ttt.wdibos.com',
+  // ttt: 'https://d64d8f8d.ngrok.io',
 
   ajax: function(config, cb) {
     $.ajax(config).done(function(data, textStatus, jqxhr) {
@@ -107,9 +108,109 @@ var tttapi = {
     return this.gameWatcher;
   }
 };
+//------------------------------------My Code Below----------------------------------------------------------
 
 
-//$(document).ready(...
+//---------------declared Variables----------------//
+var board;
+var player;
+var gameId;
+var token;
+var gameStarted;
+var winConditions = [[0,1,2], [3,4,5], [6,7,8],
+                       [0,3,6], [1,4,7], [2,5,8],
+                       [0,4,8], [6,4,2]]
+var gameOver;
+
+
+//------------Game Control------------//
+var changePlayer = function(){
+  if (player === "O") {
+    player = "X";
+  } else {
+    player = "O";
+  }
+}
+
+var isWinner = function(player){
+  $.each(winConditions, function(condition) {
+    if (board[condition[0]] === board[condition[1]] &&
+        board[condition[0]] === board[condition[2]] &&
+        board[condition[0]] === player){
+      return true;
+    }
+  });
+  return false;
+};
+
+var noMovesLeft = function(){
+  return false;
+};
+
+//---------------- UI------------------------------//
+var init = function(){
+  board = [" "," "," "," "," "," "," "," "," "];
+  player ="X";
+  gameOver = false;
+  gameStarted = false;
+  renderBoard();
+  renderText();
+}
+
+var renderBoard = function(){
+  for (var i = 0;i<board.length;i++){
+    $('.'+i).text(board[i]);
+  }
+}
+
+var renderText = function(){
+  $('.playerText').text('Turn : ' + player)
+}
+
+var setCell = function(index){
+  if (gameOver) return;
+  // Update memory
+  board[index] = player;
+
+  // Update UI
+  renderBoard();
+  renderText();
+
+  // Update back-end
+  var changeToGame = {
+    "game": {
+      "cell": {
+        "index": index, //0,
+        "value": player //"x"
+      }
+    }
+  };
+  tttapi.markCell(gameId, changeToGame, $('.token').val(), function cb(err,data) {
+    if(err) {
+      console.error(err);
+    }
+    console.log(data);
+  });
+
+  /// Win handling
+  if (isWinner(player)) {
+    alert("Player " + player + " wins.");
+    gameOver = true;
+  } else if (noMovesLeft()) {
+    alert("It's a tie.")
+    gameOver = true;
+  } else {
+    changePlayer();
+  }
+};
+
+$(document).ready(function(){
+  init();
+});
+
+
+// UI .....
+// $(document).ready(...
 $(function() {
   var form2object = function(form) {
     var data = {};
@@ -163,9 +264,17 @@ $(function() {
   });
 
   $('#create-game').on('submit', function(e) {
-    var token = $(this).children('[name="token"]').val();
     e.preventDefault();
-    tttapi.createGame(token, callback);
+    var token = $(this).children('[name="token"]').val();
+    tttapi.createGame(token, function (err, data) {
+      if(err) {
+        console.error(err);
+      }
+      console.log(data);
+      gameId = data.game.id;
+    });
+
+    gameStarted = true;
   });
 
   $('#show-game').on('submit', function(e) {
@@ -213,110 +322,12 @@ $(function() {
     });
   });
 
-});
-
-
-//------------------------------------My Code Below----------------------------------------------------------
-
-
-//---------------declared Variables----------------//
-var board;
-var player;
-var gameId;
-var gameStarted;
-var winConditions = [[0,1,2], [3,4,5], [6,7,8],
-                       [0,3,6], [1,4,7], [2,5,8],
-                       [0,4,8], [6,4,2]]
-var gameOver;
-
-//---------------- UI------------------------------//
-var renderBoard = function(){
-  for (var i = 0;i<board.length;i++){
-    $('.'+i).text(board[i]);
-  }
-}
-
-var renderText = function(){
-  $('.playerText').text('Turn : ' + player)
-}
-
-
-
-var setCell = function(cell){
-  if (gameOver) return;
-  board[cell] = player;
-  checkState();
-  if (gameOver) return;
-  changePlayer();
-  renderBoard();
-  renderText();
-}
-
-
-//--Checks wether player is X or o-----------//
-var changePlayer = function(){
-  if (player === "O") {
-    player = "X";
-  } else {
-    player = "O";
-  }
-}
-
-
-//-------------------checks win conditions------------------------------//
-var cellNotEmpty = function cellNotEmpty(value) {
-  if(value === " ") {
-    return false;
-  } else {
-    return true;
-  }
-}
-
-//-----------------shows the game ID----------------------------//
-var checkState = function(){
-  if(!gameStarted && board.filter(cellNotEmpty).length > 0) {
-    tttapi.createGame($('.token').val(), function cb(err, data) {
-      //debugger;
-      if(err) {
-        console.error(err);
-        return;
-      }
-
-      gameId = data.game.id;
-    });
-
-    gameStarted = true;
-  }
-
-  //-----------------------------------------------------------//
-  $.each(winConditions, function(index,value){
-   if (board[winConditions[index][0]] == board[winConditions[index][1]]
-    && board[winConditions[index][0]] == board[winConditions[index][2]]
-    && board[winConditions[index][0]] != " "){
-      gameOver = true;
-      $('.playerText').text('Player ' + player + ' wins');
-      renderBoard();
-   }
+  $(".cell").on('click', function(event){
+    var ind = $(".cell").index(event.target);
+    setCell(ind);
   });
-}
 
-var init = function(){
-  board = [" "," "," "," "," "," "," "," "," "];
-  player ="X";
-  gameOver = false;
-  gameStarted = false;
-  renderBoard();
-  renderText();
-}
-//----------------------testing---------------
-
-
-$(document).ready(function(){
-  init();
 });
-
-
-
 
 
 
